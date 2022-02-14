@@ -1,4 +1,8 @@
-import { connnectToDatabase } from '../../../lib/db'
+import {
+  connnectToDatabase,
+  insertUser,
+  findUserByEmail,
+} from '../../../lib/db'
 import { hashPassword } from '../../../lib/auth'
 
 async function handler(req, res) {
@@ -24,7 +28,7 @@ async function handler(req, res) {
 
     const db = client.db()
 
-    const existingUser = await db.collection('users').findOne({
+    const existingUser = await isExistingUserByEmail(client, {
       email: email,
     })
 
@@ -36,12 +40,13 @@ async function handler(req, res) {
 
     const hashedPassword = await hashPassword(password)
 
-    const result = await db.collection('users').insertOne({
+    const result = await insertUser(client, {
       email: email,
       password: hashedPassword,
     })
 
     res.status(201).json({ message: 'Created user!' })
+
     client.close()
   } catch (error) {
     res
