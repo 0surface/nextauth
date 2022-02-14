@@ -1,7 +1,7 @@
 import {
   connnectToDatabase,
   insertUser,
-  findUserByEmail,
+  isExistingUserByEmail,
 } from '../../../lib/db'
 import { hashPassword } from '../../../lib/auth'
 
@@ -26,14 +26,10 @@ async function handler(req, res) {
   try {
     const client = await connnectToDatabase()
 
-    const db = client.db()
-
-    const existingUser = await isExistingUserByEmail(client, {
-      email: email,
-    })
+    const existingUser = await isExistingUserByEmail(client, email)
 
     if (existingUser) {
-      res.status(409).json({ mesage: 'Email already exists' })
+      res.status(409).json({ message: 'Email already exists' })
       client.close()
       return
     }
