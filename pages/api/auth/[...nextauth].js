@@ -13,7 +13,7 @@ export default NextAuth({
       async authorize(credentials) {
         const client = await connnectToDatabase()
 
-        const user = await findUserByEmail(client, { email: credentials.email })
+        const user = await findUserByEmail(client, credentials.email)
 
         if (!user) {
           client.close()
@@ -21,7 +21,7 @@ export default NextAuth({
         }
 
         const isValid = await verifyPassword(
-          credentials.verifyPassword,
+          credentials.password,
           user.password,
         )
 
