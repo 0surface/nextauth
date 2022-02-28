@@ -1,5 +1,9 @@
 import { getSession } from 'next-auth/client'
-import { connectToDatabase, findUserByEmail, insertUser } from '../../../lib/db'
+import {
+  connnectToDatabase,
+  findUserByEmail,
+  updateUser,
+} from '../../../lib/db'
 import { hashPassword, verifyPassword } from '../../../lib/auth'
 
 async function handler(req, res) {
@@ -14,12 +18,12 @@ async function handler(req, res) {
     return
   }
 
-  const userEmail = sesison.user.userEmail
-  const oldPassword = req.body.oldPassword
-  const newPassword = req.body.newPassword
+  const userEmail = session.user.email
+  const { oldPassword, newPassword } = req.body.passwordData
 
-  const client = await connectToDatabase()
-  const user = findUserByEmail(client, userEmail)
+  const client = await connnectToDatabase()
+
+  const user = await findUserByEmail(client, userEmail)
 
   if (!user) {
     res.status(404).json({ message: 'User Not Found.' })
